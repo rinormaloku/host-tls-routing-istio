@@ -1,0 +1,41 @@
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  labels:
+    app: "commonpool-backend"
+  name: "commonpool-backend"
+  namespace: "ex2"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "commonpool-backend"
+  template:
+    metadata:
+      labels:
+        app: "commonpool-backend"
+    spec:
+      containers:
+        - image: "rinormaloku/helloworld-go"
+          name: "commonpool-backend"
+          ports:
+            - containerPort: 8080
+              name: "http"
+              protocol: "TCP"
+---
+kind: "Service"
+apiVersion: "v1"
+metadata:
+  labels:
+    app: "commonpool-backend"
+  name: "commonpool-backend"
+  namespace: "ex2"
+spec:
+  ports:
+    - name: "http"
+      port: 80
+      protocol: "TCP"
+      targetPort: "http"
+  selector:
+    app: "commonpool-backend"

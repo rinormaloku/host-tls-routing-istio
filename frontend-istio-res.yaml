@@ -1,0 +1,43 @@
+apiVersion: "networking.istio.io/v1alpha3"
+kind: "Gateway"
+metadata:
+  name: "gateway-frontend"
+  namespace: "istio-system"
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: "http-master-frontend"
+        protocol: "HTTP"
+      hosts:
+        - "frontend.commonpool.lab"
+      tls:
+        httpsRedirect: true
+    - port:
+        number: 443
+        name: "https-master-frontend"
+        protocol: "HTTPS"
+      tls:
+        mode: "SIMPLE"
+        credentialName: "ingress-cert-master-frontend"
+      hosts:
+        - "frontend.commonpool.lab"
+---
+apiVersion: "networking.istio.io/v1beta1"
+kind: "VirtualService"
+metadata:
+  labels:
+    app: "commonpool-frontend"
+  name: "commonpool-frontend"
+  namespace: "ex2"
+spec:
+  gateways:
+    - "istio-system/gateway-frontend"
+  hosts:
+    - "frontend.commonpool.lab"
+  http:
+    - route:
+        - destination:
+            host: "commonpool-frontend.ex2.svc.cluster.local"
